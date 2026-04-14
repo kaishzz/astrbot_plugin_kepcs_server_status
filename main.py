@@ -24,7 +24,7 @@ class ServerStatusLine:
     "astrbot_plugin_kepcs_server_status",
     "kaish",
     "查询 KepCs 服务端信息",
-    "1.0",
+    "1.1",
 )
 class KepCsServerStatusPlugin(Star):
     DEFAULT_SERVERLIST_URL = "https://kepapi.kaish.cn/api/kepcs/serverlist"
@@ -77,7 +77,7 @@ class KepCsServerStatusPlugin(Star):
         self._last_fetch_error = ""
         self._last_fetch_error_at = 0.0
 
-    @filter.command("status")
+    @filter.command("kepcs_status")
     async def server_status(self, event: AstrMessageEvent):
         """Query KepCS server list."""
 
