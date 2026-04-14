@@ -1,0 +1,18 @@
+{
+    "api_key": {
+        "description": "KepCS API Key",
+        "type": "string",
+        "hint": "用于请求头 X-API-Key，必填"
+    },
+    "bearer_token": {
+        "description": "Bearer Token",
+        "type": "string",
+        "hint": "用于 Authorization: Bearer ...；留空时默认复用 API Key"
+    },
+    "serverlist_url": {
+        "description": "Server List URL",
+        "type": "string",
+        "hint": "KepCS 服务端列表接口地址，留空时使用默认值",
+        "default": "https://kepapi.kaish.cn/api/kepcs/serverlist"
+    }
+}
