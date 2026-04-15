@@ -24,7 +24,7 @@ class ServerStatusLine:
     "astrbot_plugin_kepcs_server_status",
     "kaish",
     "查询 KepCs 服务端信息",
-    "1.1",
+    "1.2",
 )
 class KepCsServerStatusPlugin(Star):
     DEFAULT_SERVERLIST_URL = "https://kepapi.kaish.cn/api/kepcs/serverlist"
@@ -218,18 +218,25 @@ class KepCsServerStatusPlugin(Star):
 
     def _build_api_headers(self) -> Dict[str, str]:
         api_key = self._get_config_text(self.API_KEY_CONFIG_KEY)
-        if not api_key:
+        bearer_token = self._get_config_text(self.BEARER_TOKEN_CONFIG_KEY)
+        if not api_key and not bearer_token:
             raise RuntimeError(
-                f"Missing API credentials: set plugin config `{self.API_KEY_CONFIG_KEY}`"
+                "Missing API credentials: set plugin config "
+                f"`{self.API_KEY_CONFIG_KEY}` or `{self.BEARER_TOKEN_CONFIG_KEY}`"
             )
 
-        bearer_token = self._get_config_text(self.BEARER_TOKEN_CONFIG_KEY) or api_key
-        return {
+        headers = {
             "User-Agent": self.USER_AGENT,
             "Accept": "application/json",
-            "X-API-Key": api_key,
-            "Authorization": f"Bearer {bearer_token}",
         }
+        if api_key:
+            headers["X-API-Key"] = api_key
+
+        effective_bearer_token = bearer_token or api_key
+        if effective_bearer_token:
+            headers["Authorization"] = f"Bearer {effective_bearer_token}"
+
+        return headers
 
     def _build_results(self, servers: List[Dict[str, Any]]) -> List[ServerStatusLine]:
         return [self._build_result(server) for server in servers]

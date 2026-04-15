@@ -117,6 +117,14 @@ class AuthHeaderTests(unittest.TestCase):
         self.assertEqual(headers["X-API-Key"], "test-api-key")
         self.assertEqual(headers["Authorization"], "Bearer test-bearer-token")
 
+    def test_build_api_headers_supports_bearer_only_config(self):
+        self.config[self.plugin.BEARER_TOKEN_CONFIG_KEY] = "test-bearer-token"
+
+        headers = self.plugin._build_api_headers()
+
+        self.assertNotIn("X-API-Key", headers)
+        self.assertEqual(headers["Authorization"], "Bearer test-bearer-token")
+
     def test_get_serverlist_url_supports_plugin_config_override(self):
         custom_url = "https://example.com/api/serverlist"
         self.config[self.plugin.SERVERLIST_URL_CONFIG_KEY] = custom_url
@@ -124,7 +132,10 @@ class AuthHeaderTests(unittest.TestCase):
         self.assertEqual(self.plugin._get_serverlist_url(), custom_url)
 
     def test_build_api_headers_requires_plugin_config_credentials(self):
-        with self.assertRaisesRegex(RuntimeError, self.plugin.API_KEY_CONFIG_KEY):
+        with self.assertRaisesRegex(
+            RuntimeError,
+            f"{self.plugin.API_KEY_CONFIG_KEY}` or `{self.plugin.BEARER_TOKEN_CONFIG_KEY}",
+        ):
             self.plugin._build_api_headers()
 
     def test_fetch_server_list_uses_headers_and_never_query_key(self):
@@ -154,6 +165,29 @@ class AuthHeaderTests(unittest.TestCase):
         self.assertNotIn("key", query_params)
         self.assertEqual(request_headers["X-api-key"], "test-api-key")
         self.assertEqual(request_headers["Authorization"], "Bearer test-api-key")
+        self.assertEqual(captured["timeout"], self.plugin.API_TIMEOUT_SECONDS)
+
+    def test_fetch_server_list_supports_bearer_only_header(self):
+        self.config[self.plugin.BEARER_TOKEN_CONFIG_KEY] = "test-bearer-token"
+        captured = {}
+        original_urlopen = self.main.request.urlopen
+
+        def fake_urlopen(req, timeout=0):
+            captured["request"] = req
+            captured["timeout"] = timeout
+            return FakeResponse({"servers": []})
+
+        self.main.request.urlopen = fake_urlopen
+        try:
+            payload = self.plugin._fetch_server_list_payload()
+        finally:
+            self.main.request.urlopen = original_urlopen
+
+        request_headers = dict(captured["request"].header_items())
+
+        self.assertEqual(payload, {"servers": []})
+        self.assertNotIn("X-api-key", request_headers)
+        self.assertEqual(request_headers["Authorization"], "Bearer test-bearer-token")
         self.assertEqual(captured["timeout"], self.plugin.API_TIMEOUT_SECONDS)
 
     def test_fetch_server_list_rejects_oversized_response(self):

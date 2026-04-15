@@ -2,12 +2,12 @@
     "api_key": {
         "description": "KepCS API Key",
         "type": "string",
-        "hint": "用于请求头 X-API-Key，必填"
+        "hint": "用于请求头 X-API-Key；可选，留空时可只用 Bearer Token"
     },
     "bearer_token": {
         "description": "Bearer Token",
         "type": "string",
-        "hint": "用于 Authorization: Bearer ...；留空时默认复用 API Key"
+        "hint": "用于 Authorization: Bearer ...；可选，留空时默认复用 API Key"
     },
     "serverlist_url": {
         "description": "Server List URL",
