@@ -211,7 +211,7 @@ class AuthHeaderTests(unittest.TestCase):
                 "name": "[bad](name)",
                 "host": "bad host&evil=1",
                 "port": 27015,
-                "mode": "ze",
+                "mode": "ze_pt",
                 "status": "ok",
                 "current_players": 5,
                 "max_players": 64,
@@ -219,7 +219,7 @@ class AuthHeaderTests(unittest.TestCase):
             }
         )
 
-        self.assertEqual(result.group, "ze")
+        self.assertEqual(result.group, "ze_pt")
         self.assertEqual(result.player_count, 5)
         self.assertFalse(result.is_unavailable)
         self.assertIn(r"\[bad\]\(name\)", result.line)

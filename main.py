@@ -24,7 +24,7 @@ class ServerStatusLine:
     "astrbot_plugin_kepcs_server_status",
     "kaish",
     "查询 KepCs 服务端信息",
-    "1.2",
+    "1.3",
 )
 class KepCsServerStatusPlugin(Star):
     DEFAULT_SERVERLIST_URL = "https://kepapi.kaish.cn/api/kepcs/serverlist"
@@ -45,12 +45,12 @@ class KepCsServerStatusPlugin(Star):
     OUTPUT_TITLE = "KepCS ServerList"
     ALL_BUSY_MESSAGE = "_All available servers are currently occupied_"
     GROUP_MAP = {
-        "ze": "Play map",
-        "ze_practice": "Practice map",
+        "ze_pt": "Play map",
+        "ze_xl": "Training map",
     }
     GROUP_ORDER = {
-        "ze_practice": 0,
-        "ze": 1,
+        "ze_xl": 0,
+        "ze_pt": 1,
     }
     SAFE_GROUP_PATTERN = re.compile(r"^[a-z0-9_-]{1,32}$")
     SAFE_HOST_PATTERN = re.compile(r"^[A-Za-z0-9.\-:]+$")
